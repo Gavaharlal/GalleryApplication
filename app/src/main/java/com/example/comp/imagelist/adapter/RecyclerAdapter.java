@@ -1,42 +1,75 @@
 package com.example.comp.imagelist.adapter;
 
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.comp.imagelist.MainActivity;
 import com.example.comp.imagelist.R;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
-    private ArrayList<ModelItem> items = new ArrayList<>();
 
-    public void addAll(List<ModelItem> inItems) {
-        int pos = getItemCount();
-        items.addAll(inItems);
-        notifyItemRangeInserted(pos, items.size());
+    private ArrayList<Photo> photos = new ArrayList<>();
+
+    public void setData() {
+        JsonAsyncTask jsonAsyncTask = new JsonAsyncTask();
+        jsonAsyncTask.execute(MainActivity.requestUrl);
+    }
+
+    private class JsonAsyncTask extends AsyncTask<String, Void, ArrayList<Photo>> {
+
+        @Override
+        protected ArrayList<Photo> doInBackground(String... strings) {
+            ArrayList<Photo> ans = new ArrayList<>();
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                for (JsonNode curImg : objectMapper.readTree(new URL(strings[0]))) {
+                    String description = curImg.path("description").asText();
+                    String smallUrl = curImg.path("urls").path("small").asText();
+                    String fullUrl = curImg.path("urls").path("full").asText();
+                    ans.add(new Photo(description, smallUrl, fullUrl));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return ans;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Photo> photosList) {
+            super.onPostExecute(photosList);
+            for (Photo photo : photosList) {
+                photos.add(photo);
+                notifyItemRangeInserted(photos.size() - 1, 1);
+            }
+        }
     }
 
 
     @NonNull
     @Override
     public RecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.myitem, parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.myitem, parent, false);
         return new RecyclerViewHolder(view);
-
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder recyclerViewHolder, int position) {
-        recyclerViewHolder.bind(items.get(position));
+        recyclerViewHolder.bind(photos.get(position));
     }
 
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return photos.size();
     }
 }

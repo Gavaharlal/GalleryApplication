@@ -1,6 +1,7 @@
 package com.example.comp.imagelist.adapter;
 
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -12,9 +13,6 @@ import android.widget.TextView;
 
 import com.example.comp.imagelist.R;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 class RecyclerViewHolder extends RecyclerView.ViewHolder {
     private TextView description;
@@ -26,35 +24,11 @@ class RecyclerViewHolder extends RecyclerView.ViewHolder {
         image = itemView.findViewById(R.id.img);
     }
 
+    @SuppressLint("SetTextI18n")
     void bind(Photo modelItem) {
-        PictureAsyncTask pictureAsyncTask = new PictureAsyncTask();
-        pictureAsyncTask.execute(modelItem.getSmallImgUrl());
-        description.setText(modelItem.getDescription());
+        description.setText(modelItem.getDescription() );
+        image.setImageBitmap(modelItem.getImageBitmap());
     }
-
-    private class PictureAsyncTask extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String... strings) {
-
-            Bitmap bitmap = null;
-            try {
-                InputStream downloadStream = (new URL(strings[0])).openStream();
-                bitmap = BitmapFactory.decodeStream(downloadStream);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            image.setImageBitmap(bitmap);
-        }
-    }
-
 }
 
 

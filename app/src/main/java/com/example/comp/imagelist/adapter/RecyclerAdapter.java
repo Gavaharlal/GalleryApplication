@@ -1,5 +1,7 @@
 package com.example.comp.imagelist.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -35,8 +38,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
                 for (JsonNode curImg : objectMapper.readTree(new URL(strings[0]))) {
                     String description = curImg.path("description").asText();
                     String smallUrl = curImg.path("urls").path("small").asText();
+
+                    Bitmap bitmap;
+                    InputStream downloadStream = (new URL(smallUrl)).openStream();
+                    bitmap = BitmapFactory.decodeStream(downloadStream);
+
                     String fullUrl = curImg.path("urls").path("full").asText();
-                    ans.add(new Photo(description, smallUrl, fullUrl));
+
+                    ans.add(new Photo(description, smallUrl, fullUrl, bitmap));
                 }
             } catch (IOException e) {
                 e.printStackTrace();

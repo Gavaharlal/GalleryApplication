@@ -45,6 +45,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
                     String fullUrl = curImg.path("urls").path("full").asText();
 
+
                     ans.add(new Photo(description, smallUrl, fullUrl, bitmap));
                 }
             } catch (IOException e) {

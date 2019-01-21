@@ -31,14 +31,6 @@
             android:layout_gravity="center"
             tools:text="Some description" />
 
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="352dp"
-            android:layout_height="13dp"
-            android:layout_marginEnd="16dp"
-            android:background="?android:attr/dividerHorizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:layout_editor_absoluteY="232dp" />
     </LinearLayout>
 
 

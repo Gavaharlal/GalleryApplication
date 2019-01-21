@@ -1,20 +1,14 @@
 package com.example.comp.imagelist.adapter;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.comp.imagelist.ItemDetailActivity;
-import com.example.comp.imagelist.ItemDetailFragment;
 import com.example.comp.imagelist.ItemListActivity;
 import com.example.comp.imagelist.R;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,12 +23,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private ArrayList<Photo> photos = new ArrayList<>();
     private final ItemListActivity mParentActivity;
-//    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
-//        @Override
-//        public void onClick(View v) {
-//
-//        }
-//    };
 
     public RecyclerAdapter(ItemListActivity mParentActivity) {
         this.mParentActivity = mParentActivity;

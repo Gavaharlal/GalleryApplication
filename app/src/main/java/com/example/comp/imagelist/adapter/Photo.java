@@ -27,11 +27,11 @@ public class Photo {
     }
 
 
-    public String getDescription() {
+    String getDescription() {
         return description;
     }
 
-    public String getFullImgUrl() {
+    String getFullImgUrl() {
         return fullImgUrl;
     }
 

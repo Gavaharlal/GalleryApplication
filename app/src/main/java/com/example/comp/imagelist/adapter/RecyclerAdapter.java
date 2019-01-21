@@ -1,15 +1,21 @@
 package com.example.comp.imagelist.adapter;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.comp.imagelist.MainActivity;
+import com.example.comp.imagelist.ItemDetailActivity;
+import com.example.comp.imagelist.ItemDetailFragment;
+import com.example.comp.imagelist.ItemListActivity;
 import com.example.comp.imagelist.R;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,10 +28,21 @@ import java.util.ArrayList;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     private ArrayList<Photo> photos = new ArrayList<>();
+    private final ItemListActivity mParentActivity;
+//    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//
+//        }
+//    };
+
+    public RecyclerAdapter(ItemListActivity mParentActivity) {
+        this.mParentActivity = mParentActivity;
+    }
 
     public void setData() {
         JsonAsyncTask jsonAsyncTask = new JsonAsyncTask();
-        jsonAsyncTask.execute(MainActivity.requestUrl);
+        jsonAsyncTask.execute(ItemListActivity.requestUrl);
     }
 
     private class JsonAsyncTask extends AsyncTask<String, Void, ArrayList<Photo>> {
@@ -44,7 +61,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
                     bitmap = BitmapFactory.decodeStream(downloadStream);
 
                     String fullUrl = curImg.path("urls").path("full").asText();
-
 
                     ans.add(new Photo(description, smallUrl, fullUrl, bitmap));
                 }
@@ -74,7 +90,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder recyclerViewHolder, int position) {
-        recyclerViewHolder.bind(photos.get(position));
+        recyclerViewHolder.bind(photos.get(position), mParentActivity);
     }
 
 

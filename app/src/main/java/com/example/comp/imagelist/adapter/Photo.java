@@ -11,7 +11,9 @@ public class Photo {
 
     private String fullImgUrl;
 
-    private Bitmap imageBitmap;
+    private Bitmap smallImageBitmap;
+
+    private Bitmap fullImageBitmap;
 
     Photo(String description, String smallImgUrl, String fullImgUrl, Bitmap imageBitmap) {
         if (description.equals("null")) {
@@ -21,12 +23,9 @@ public class Photo {
         }
         this.smallImgUrl = smallImgUrl;
         this.fullImgUrl = fullImgUrl;
-        this.imageBitmap = imageBitmap;
+        this.smallImageBitmap = imageBitmap;
     }
 
-    String getSmallImgUrl() {
-        return smallImgUrl;
-    }
 
     public String getDescription() {
         return description;
@@ -36,7 +35,8 @@ public class Photo {
         return fullImgUrl;
     }
 
-    Bitmap getImageBitmap() {
-        return imageBitmap;
+    Bitmap getSmallImageBitmap() {
+        return smallImageBitmap;
     }
+
 }

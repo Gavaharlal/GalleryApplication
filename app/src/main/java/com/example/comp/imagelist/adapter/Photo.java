@@ -9,6 +9,16 @@ public class Photo {
 
     private String fullImgUrl;
 
+    public String getSmallImgUrl() {
+        return smallImgUrl;
+    }
+
+    public void setSmallImgUrl(String smallImgUrl) {
+        this.smallImgUrl = smallImgUrl;
+    }
+
+    private String smallImgUrl;
+
     private Bitmap smallImageBitmap;
 
     public Photo(String description, String fullImgUrl, Bitmap imageBitmap) {

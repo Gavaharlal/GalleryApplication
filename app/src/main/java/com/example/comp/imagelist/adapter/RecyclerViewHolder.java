@@ -37,7 +37,7 @@ class RecyclerViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
                 if (ItemListActivity.isTwoPane()) {
                     Bundle arguments = new Bundle();
-                    arguments.putString("FULLURL", photo.getFullImgUrl());
+                    arguments.putString("FULLURL", photo.getSmallImgUrl());
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
                     (mParentActivity).getSupportFragmentManager().beginTransaction()
@@ -46,7 +46,7 @@ class RecyclerViewHolder extends RecyclerView.ViewHolder {
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra("FULLURL", photo.getFullImgUrl());
+                    intent.putExtra("FULLURL", photo.getSmallImgUrl());
                     context.startActivity(intent);
                 }
             }

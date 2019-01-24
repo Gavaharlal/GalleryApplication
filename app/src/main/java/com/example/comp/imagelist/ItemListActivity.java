@@ -25,14 +25,14 @@ public class ItemListActivity extends AppCompatActivity {
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
-    private static boolean mTwoPane;
+    private RecyclerAdapter adapter;
 
+    private static boolean mTwoPane;
     static public boolean isTwoPane() {
         return mTwoPane;
     }
 
     public final static String requestUrl = "https://api.unsplash.com/photos?per_page=30&client_id=588504af4732dedfff1f7b64f0849b7bacb3d7ebf20e351f8bea66d084ef977b";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,24 +52,30 @@ public class ItemListActivity extends AppCompatActivity {
         LinearLayoutManager verticalLinearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(verticalLinearLayoutManager);
-        final RecyclerAdapter adapter = new RecyclerAdapter(this);
+        adapter = new RecyclerAdapter(this);
         recyclerView.setAdapter(adapter);
 
         Intent intent = new Intent(this, ListLoader.class);
         startService(intent);
 
-        bindService(new Intent(this, ListLoader.class),
-                new ServiceConnection() {
-                    @Override
-                    public void onServiceConnected(ComponentName name, IBinder service) {
-                        ListLoader.MyBinder binder = (ListLoader.MyBinder) service;
-                        binder.setAdapter(adapter);
-                    }
-
-                    @Override
-                    public void onServiceDisconnected(ComponentName name) {
-                    }
-                },
-                0);
+        bindService(new Intent(this, ListLoader.class), serviceConnection, 0);
     }
+
+    @Override
+    protected void onDestroy() {
+        unbindService(serviceConnection);
+        super.onDestroy();
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            ListLoader.MyBinder binder = (ListLoader.MyBinder) service;
+            binder.setAdapter(adapter);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+        }
+    };
 }

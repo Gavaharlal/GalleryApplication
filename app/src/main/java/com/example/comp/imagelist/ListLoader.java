@@ -26,12 +26,7 @@ import java.util.ArrayList;
 public class ListLoader extends IntentService {
 
     private ArrayList<Photo> photoArrayList = new ArrayList<>();
-
     private RecyclerAdapter recyclerAdapter;
-
-    public ListLoader() {
-        super("ListLoader");
-    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -49,7 +44,10 @@ public class ListLoader extends IntentService {
 
                 String fullUrl = curImg.path("urls").path("full").asText();
 
-                ans.add(new Photo(description, fullUrl, bitmap));
+                Photo photo = new Photo(description, fullUrl, bitmap);
+                photo.setSmallImgUrl(smallUrl);
+
+                ans.add(photo);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,6 +83,10 @@ public class ListLoader extends IntentService {
     public boolean onUnbind(Intent intent) {
         recyclerAdapter = null;
         return super.onUnbind(intent);
+    }
+
+    public ListLoader() {
+        super("ListLoader");
     }
 
 }

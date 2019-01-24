@@ -7,35 +7,30 @@ public class Photo {
 
     private String description;
 
-    private String smallImgUrl;
-
     private String fullImgUrl;
 
     private Bitmap smallImageBitmap;
 
-    private Bitmap fullImageBitmap;
-
-    Photo(String description, String smallImgUrl, String fullImgUrl, Bitmap imageBitmap) {
+    Photo(String description, String fullImgUrl, Bitmap imageBitmap) {
         if (description.equals("null")) {
             this.description = "Without description";
         } else {
             this.description = description;
         }
-        this.smallImgUrl = smallImgUrl;
         this.fullImgUrl = fullImgUrl;
         this.smallImageBitmap = imageBitmap;
     }
 
 
-    String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    String getFullImgUrl() {
+    public String getFullImgUrl() {
         return fullImgUrl;
     }
 
-    Bitmap getSmallImageBitmap() {
+    public Bitmap getSmallImageBitmap() {
         return smallImageBitmap;
     }
 

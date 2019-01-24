@@ -29,8 +29,8 @@ public class ItemDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString("FullURL",
-                    getIntent().getStringExtra("FullURL"));
+            arguments.putString("FULLURL",
+                    getIntent().getStringExtra("FULLURL"));
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

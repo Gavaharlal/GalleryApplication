@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -28,15 +29,16 @@ class RecyclerViewHolder extends RecyclerView.ViewHolder {
     }
 
     @SuppressLint("SetTextI18n")
-    void bind(final Photo modelItem, final ItemListActivity mParentActivity) {
-        description.setText(modelItem.getDescription());
-        image.setImageBitmap(modelItem.getSmallImageBitmap());
+    void bind(final Photo photo, final ItemListActivity mParentActivity) {
+
+        description.setText(photo.getDescription());
+        image.setImageBitmap(photo.getSmallImageBitmap());
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (ItemListActivity.isTwoPane()) {
                     Bundle arguments = new Bundle();
-                    arguments.putString("FullURL", modelItem.getFullImgUrl());
+                    arguments.putString("FULLURL", photo.getFullImgUrl());
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
                     (mParentActivity).getSupportFragmentManager().beginTransaction()
@@ -45,7 +47,7 @@ class RecyclerViewHolder extends RecyclerView.ViewHolder {
                 } else {
                     Context context = v.getContext();
                     Intent intent = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra("FullURL", modelItem.getFullImgUrl());
+                    intent.putExtra("FULLURL", photo.getFullImgUrl());
                     context.startActivity(intent);
                 }
             }

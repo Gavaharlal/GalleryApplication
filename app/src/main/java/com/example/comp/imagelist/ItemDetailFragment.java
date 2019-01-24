@@ -41,7 +41,7 @@ public class ItemDetailFragment extends Fragment {
                 File file = new File(path);
                 if (!file.exists()) {
                     if (!file.getParentFile().exists()) {
-                        file.getParentFile().mkdir();
+                        file.getParentFile().mkdirs();
                     }
                     InputStream downloadStream = (new URL(fullImgUrl)).openStream();
                     OutputStream out = new BufferedOutputStream(new FileOutputStream(path));

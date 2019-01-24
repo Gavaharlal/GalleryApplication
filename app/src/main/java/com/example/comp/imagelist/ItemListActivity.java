@@ -1,10 +1,13 @@
 package com.example.comp.imagelist;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import com.example.comp.imagelist.adapter.RecyclerAdapter;
 
@@ -30,6 +33,7 @@ public class ItemListActivity extends AppCompatActivity {
 
     public final static String requestUrl = "https://api.unsplash.com/photos?per_page=30&client_id=588504af4732dedfff1f7b64f0849b7bacb3d7ebf20e351f8bea66d084ef977b";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -48,9 +52,24 @@ public class ItemListActivity extends AppCompatActivity {
         LinearLayoutManager verticalLinearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(verticalLinearLayoutManager);
-
-        RecyclerAdapter adapter = new RecyclerAdapter(this);
+        final RecyclerAdapter adapter = new RecyclerAdapter(this);
         recyclerView.setAdapter(adapter);
-        adapter.setData();
+
+        Intent intent = new Intent(this, ListLoader.class);
+        startService(intent);
+
+        bindService(new Intent(this, ListLoader.class),
+                new ServiceConnection() {
+                    @Override
+                    public void onServiceConnected(ComponentName name, IBinder service) {
+                        ListLoader.MyBinder binder = (ListLoader.MyBinder) service;
+                        binder.setAdapter(adapter);
+                    }
+
+                    @Override
+                    public void onServiceDisconnected(ComponentName name) {
+                    }
+                },
+                0);
     }
 }

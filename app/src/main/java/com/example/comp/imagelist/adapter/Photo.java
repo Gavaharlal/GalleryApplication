@@ -11,7 +11,7 @@ public class Photo {
 
     private Bitmap smallImageBitmap;
 
-    Photo(String description, String fullImgUrl, Bitmap imageBitmap) {
+    public Photo(String description, String fullImgUrl, Bitmap imageBitmap) {
         if (description.equals("null")) {
             this.description = "Without description";
         } else {

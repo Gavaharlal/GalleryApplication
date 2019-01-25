@@ -1,7 +1,12 @@
 package com.example.comp.imagelist;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -11,20 +16,22 @@ import android.support.v7.app.AppCompatActivity;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
+    private DBHelper dbHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check);
 
-        // savedInstanceState is non-null when there is fragment state
-        // saved from previous configurations of this activity
-        // (e.g. when rotating the screen from portrait to landscape).
-        // In this case, the fragment will automatically be re-added
-        // to its container so we don't need to manually add it.
-        // For more information, see the Fragments API guide at:
-        //
-        // http://developer.android.com/guide/components/fragments.html
-        //
+        Button addButton = findViewById(R.id.addButton);
+        dbHelper = new DBHelper(this);
+
+        Cursor cursor = dbHelper.getCursorOnUrl(getIntent().getStringExtra("FULLURL"));
+
+        if (cursor.moveToFirst()) {
+            addButton.setText("Saved");
+        }
+
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
@@ -39,4 +46,14 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
     }
 
+    public void addPhoto(View view) {
+        Button button = (Button) view;
+        if (!button.getText().equals("Saved")) {
+            button.setText("Saved");
+            SQLiteDatabase db = dbHelper.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+            cv.put("url", getIntent().getStringExtra("FULLURL"));
+            db.insert(DBHelper.DB_NAME, null, cv);
+        }
+    }
 }

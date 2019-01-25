@@ -12,12 +12,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <service
-            android:name=".ImageLoader"
-            android:exported="false" />
-        <service
-            android:name=".ListLoader"
-            android:exported="false" />
+        <activity
+            android:name=".favourites.FavoritesList"
+            android:label="@string/title_activity_favorites"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".ItemListActivity"

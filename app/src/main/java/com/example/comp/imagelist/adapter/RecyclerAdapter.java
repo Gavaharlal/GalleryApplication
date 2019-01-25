@@ -6,22 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.comp.imagelist.ItemListActivity;
 import com.example.comp.imagelist.R;
+import com.example.comp.imagelist.retrofit.Photo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
-    private ArrayList<Photo> photos = new ArrayList<>();
-    private final ItemListActivity mParentActivity;
+    private List<Photo> photos = new ArrayList<>();
 
-    public RecyclerAdapter(ItemListActivity mParentActivity) {
-        this.mParentActivity = mParentActivity;
-    }
-
-
-    public void setPhotos(ArrayList<Photo> arg){
+    public void setPhotos(List<Photo> arg) {
         photos = arg;
         notifyDataSetChanged();
     }
@@ -35,7 +30,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewHolder recyclerViewHolder, int position) {
-        recyclerViewHolder.bind(photos.get(position), mParentActivity);
+        recyclerViewHolder.bind(photos.get(position));
     }
 
 

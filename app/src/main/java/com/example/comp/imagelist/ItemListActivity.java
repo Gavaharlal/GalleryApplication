@@ -1,15 +1,23 @@
 package com.example.comp.imagelist;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.example.comp.imagelist.adapter.RecyclerAdapter;
+import com.example.comp.imagelist.favourites.FavoritesList;
+import com.example.comp.imagelist.retrofit.Photo;
+import com.example.comp.imagelist.retrofit.JsonParsable;
+import com.example.comp.imagelist.retrofit.MyRetrofitCreator;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * An activity representing a list of Items. This activity
@@ -21,29 +29,8 @@ import com.example.comp.imagelist.adapter.RecyclerAdapter;
  */
 public class ItemListActivity extends AppCompatActivity {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private RecyclerAdapter adapter;
-
-    private static boolean mTwoPane;
-    static public boolean isTwoPane() {
-        return mTwoPane;
-    }
-
-    public final static String requestUrl = "https://api.unsplash.com/photos?per_page=30&client_id=588504af4732dedfff1f7b64f0849b7bacb3d7ebf20e351f8bea66d084ef977b";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        if (findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -52,30 +39,30 @@ public class ItemListActivity extends AppCompatActivity {
         LinearLayoutManager verticalLinearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(verticalLinearLayoutManager);
-        adapter = new RecyclerAdapter(this);
+        final RecyclerAdapter adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
 
-        Intent intent = new Intent(this, ListLoader.class);
-        startService(intent);
+        JsonParsable modelApi = MyRetrofitCreator.constructModelApi();
 
-        bindService(new Intent(this, ListLoader.class), serviceConnection, 0);
+        modelApi.parse().enqueue(new Callback<List<Photo>>() {
+            @Override
+            public void onResponse(Call<List<Photo>> call, Response<List<Photo>> response) {
+                adapter.setPhotos(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<Photo>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     @Override
     protected void onDestroy() {
-        unbindService(serviceConnection);
         super.onDestroy();
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            ListLoader.MyBinder binder = (ListLoader.MyBinder) service;
-            binder.setAdapter(adapter);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-        }
-    };
+    public void startFavorite(View view) {
+        startActivity(new Intent(this, FavoritesList.class));
+    }
 }

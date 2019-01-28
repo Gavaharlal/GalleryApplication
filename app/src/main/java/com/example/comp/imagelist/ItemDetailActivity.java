@@ -20,7 +20,6 @@ import io.reactivex.functions.Consumer;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
-    private Disposable disposable;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -32,17 +31,9 @@ public class ItemDetailActivity extends AppCompatActivity {
 
         Photo photo = getIntent().getParcelableExtra(StringUtility.PHOTO);
 
-        disposable = MyApplication
-                .dataBaseHelper
-                .containsPhoto(photo.getId())
-                .subscribe(new Consumer<Boolean>() {
-                    @Override
-                    public void accept(Boolean aBoolean) {
-                        if (aBoolean) {
-                            addButton.setText(StringUtility.SAVED);
-                        }
-                    }
-                });
+        if (MyApplication.dataBaseHelper.containsPhoto(photo.getId())) {
+            addButton.setText(StringUtility.SAVED);
+        }
 
 
         if (savedInstanceState == null) {
@@ -59,13 +50,6 @@ public class ItemDetailActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        if (disposable != null && !disposable.isDisposed()) {
-            disposable.dispose();
-        }
-        super.onDestroy();
-    }
 
     @SuppressLint("SetTextI18n")
     public void addPhoto(View view) {

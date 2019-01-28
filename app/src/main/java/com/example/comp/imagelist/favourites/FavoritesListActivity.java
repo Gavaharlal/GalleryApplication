@@ -17,7 +17,7 @@ import java.util.List;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
-public class FavoritesList extends AppCompatActivity {
+public class FavoritesListActivity extends AppCompatActivity {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
     private RecyclerAdapter recyclerAdapter;

@@ -10,7 +10,7 @@ import android.view.View;
 
 import com.example.comp.imagelist.adapter.Photo;
 import com.example.comp.imagelist.adapter.RecyclerAdapter;
-import com.example.comp.imagelist.favourites.FavoritesList;
+import com.example.comp.imagelist.favourites.FavoritesListActivity;
 import com.example.comp.imagelist.retrofit.ModelPhoto;
 import com.example.comp.imagelist.retrofit.UnsplashClient;
 import com.example.comp.imagelist.retrofit.UnsplashService;
@@ -92,6 +92,6 @@ public class ItemListActivity extends AppCompatActivity {
     }
 
     public void startFavorite(View view) {
-        startActivity(new Intent(this, FavoritesList.class));
+        startActivity(new Intent(this, FavoritesListActivity.class));
     }
 }

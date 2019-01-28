@@ -10,6 +10,10 @@ import com.example.comp.imagelist.adapter.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
@@ -40,67 +44,114 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    void insertPhoto(Photo photo) {
-        SQLiteDatabase db = getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(COLUMN_ID, photo.getId());
-        values.put(COLUMN_SMALL_URL, photo.getSmallUrl());
-        values.put(COLUMN_FULL_URL, photo.getFullUrl());
-        values.put(COLUMN_DESCRIPTION, photo.getDescription());
-        db.insert(TABLE_NAME, null, values);
-        db.close();
+    void insertPhoto(final Photo photo) {
+        new Callable<Void>() {
+            @Override
+            public Void call() {
+                SQLiteDatabase db = getWritableDatabase();
+                ContentValues values = new ContentValues();
+                values.put(COLUMN_ID, photo.getId());
+                values.put(COLUMN_SMALL_URL, photo.getSmallUrl());
+                values.put(COLUMN_FULL_URL, photo.getFullUrl());
+                values.put(COLUMN_DESCRIPTION, photo.getDescription());
+                db.insert(TABLE_NAME, null, values);
+                db.close();
+                return null;
+            }
+        }.call();
+
     }
 
-    private Photo getPhoto(String id) {
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, null, COLUMN_ID + "=?",
-                new String[]{id}, null, null, null);
+    private Observable<Photo> getPhoto(final String id) {
 
-        Photo photo;
+        final Callable<Photo> photoCallable = new Callable<Photo>() {
+            @Override
+            public Photo call() {
+                SQLiteDatabase db = getReadableDatabase();
+                Cursor cursor = db.query(TABLE_NAME, null, COLUMN_ID + "=?",
+                        new String[]{id}, null, null, null);
 
-        if (cursor.moveToFirst()) {
-            photo = new Photo(
-                    id,
-                    cursor.getString(cursor.getColumnIndex(COLUMN_SMALL_URL)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_FULL_URL)),
-                    cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
-            );
-            cursor.close();
-        } else {
-            photo = null;
-        }
+                Photo photo;
 
-        return photo;
+                if (cursor.moveToFirst()) {
+                    photo = new Photo(
+                            id,
+                            cursor.getString(cursor.getColumnIndex(COLUMN_SMALL_URL)),
+                            cursor.getString(cursor.getColumnIndex(COLUMN_FULL_URL)),
+                            cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
+                    );
+                    cursor.close();
+                } else {
+                    photo = null;
+                }
+
+                return photo;
+            }
+        };
+        return Observable.fromCallable(photoCallable).subscribeOn(Schedulers.io());
     }
 
-    boolean containsPhoto(String id) {
-        return getPhoto(id) != null;
+    Observable<Boolean> containsPhoto(final String id) {
+        final Callable<Boolean> photoCallable = new Callable<Boolean>() {
+            @Override
+            public Boolean call() {
+                SQLiteDatabase db = getReadableDatabase();
+                Cursor cursor = db.query(TABLE_NAME, null, COLUMN_ID + "=?",
+                        new String[]{id}, null, null, null);
+                boolean ans = cursor.moveToFirst();
+                cursor.close();
+                return ans;
+            }
+        };
+        return Observable.fromCallable(photoCallable).subscribeOn(Schedulers.io());
     }
+//
+//    public Observable<Boolean> isEmpty() {
+//        final Callable<Boolean> photoCallable = new Callable<Boolean>() {
+//            @Override
+//            public Boolean call() {
+//                SQLiteDatabase db = getReadableDatabase();
+//                Cursor cursor = db.query(TABLE_NAME, null, null,
+//                        null, null, null, null);
+//                boolean ans = cursor.moveToFirst();
+//                cursor.close();
+//                return ans;
+//            }
+//        };
+//        return Observable.fromCallable(photoCallable).subscribeOn(Schedulers.io());
+//    }
 
-    public List<Photo> getAllPhotos() {
-        List<Photo> photos = new ArrayList<>();
+    public Observable<List<Photo>> getAllPhotos() {
 
-        String selectQuery = "SELECT * FROM " + TABLE_NAME;
+        final Callable<List<Photo>> listCallable = new Callable<List<Photo>>() {
+            @Override
+            public List<Photo> call() {
+                List<Photo> photos = new ArrayList<>();
 
-        SQLiteDatabase db = getWritableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
+                String selectQuery = "SELECT * FROM " + TABLE_NAME;
 
-        if (cursor.moveToFirst()) {
-            do {
-                Photo photo = new Photo(
-                        cursor.getString(cursor.getColumnIndex(COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndex(COLUMN_SMALL_URL)),
-                        cursor.getString(cursor.getColumnIndex(COLUMN_FULL_URL)),
-                        cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
-                );
-                photos.add(photo);
-            } while (cursor.moveToNext());
-        }
+                SQLiteDatabase db = getWritableDatabase();
+                Cursor cursor = db.rawQuery(selectQuery, null);
 
-        cursor.close();
-        db.close();
+                if (cursor.moveToFirst()) {
+                    do {
+                        Photo photo = new Photo(
+                                cursor.getString(cursor.getColumnIndex(COLUMN_ID)),
+                                cursor.getString(cursor.getColumnIndex(COLUMN_SMALL_URL)),
+                                cursor.getString(cursor.getColumnIndex(COLUMN_FULL_URL)),
+                                cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
+                        );
+                        photos.add(photo);
+                    } while (cursor.moveToNext());
+                }
 
-        return photos;
+                cursor.close();
+                db.close();
+
+                return photos;
+            }
+        };
+        return Observable.fromCallable(listCallable);
     }
 
 }

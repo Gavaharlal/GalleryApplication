@@ -14,7 +14,13 @@ import com.example.comp.imagelist.adapter.RecyclerAdapter;
 
 import java.util.List;
 
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+
 public class FavoritesList extends AppCompatActivity {
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private RecyclerAdapter recyclerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,18 +29,36 @@ public class FavoritesList extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView recyclerView = findViewById(R.id.favRecyclerList);
+        final RecyclerView recyclerView = findViewById(R.id.favRecyclerList);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        RecyclerAdapter adapter = new RecyclerAdapter();
-        recyclerView.setAdapter(adapter);
+        recyclerAdapter = new RecyclerAdapter();
+        recyclerView.setAdapter(recyclerAdapter);
 
+        final Toast toast = Toast.makeText(this, "You haven't got any favorite photos yet", Toast.LENGTH_SHORT);
 
-        List<Photo> photos = MyApplication.dataBaseHelper.getAllPhotos();
-        if (photos.isEmpty()) {
-            Toast.makeText(this, "You haven't got any favorite photos yet", Toast.LENGTH_LONG).show();
-        } else {
-            adapter.setPhotos(photos);
-        }
+        compositeDisposable.add(
+                MyApplication
+                        .dataBaseHelper
+                        .getAllPhotos()
+                        .subscribe(
+                                new Consumer<List<Photo>>() {
+                                    @Override
+                                    public void accept(List<Photo> photos) {
+                                        if (photos.isEmpty()) {
+                                            toast.show();
+                                        } else {
+                                            recyclerAdapter.setPhotos(photos);
+                                        }
+                                    }
+                                }
+                        )
+        );
     }
 
+
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
+    }
 }

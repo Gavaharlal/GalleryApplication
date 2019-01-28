@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 
 import com.example.comp.imagelist.adapter.Photo;
@@ -17,10 +18,10 @@ import com.example.comp.imagelist.retrofit.UnsplashService;
 import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.internal.EverythingIsNonNull;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * An activity representing a list of Items. This activity
@@ -32,6 +33,10 @@ import retrofit2.internal.EverythingIsNonNull;
  */
 public class ItemListActivity extends AppCompatActivity {
 
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private RecyclerAdapter recyclerAdapter;
+    private static final String REQUEST = "photos?per_page=30&client_id=588504af4732dedfff1f7b64f0849b7bacb3d7ebf20e351f8bea66d084ef977b";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -42,29 +47,48 @@ public class ItemListActivity extends AppCompatActivity {
         LinearLayoutManager verticalLinearLayoutManager = new LinearLayoutManager(this);
 
         recyclerView.setLayoutManager(verticalLinearLayoutManager);
-        final RecyclerAdapter adapter = new RecyclerAdapter();
-        recyclerView.setAdapter(adapter);
+        recyclerAdapter = new RecyclerAdapter();
+        recyclerView.setAdapter(recyclerAdapter);
+        setModelPhotos(REQUEST);
+    }
 
+    @Override
+    protected void onDestroy() {
+        compositeDisposable.clear();
+        super.onDestroy();
+    }
+
+    private void setModelPhotos(String request) {
         UnsplashService unsplashService = new UnsplashClient().createUnsplashService();
-        unsplashService.getModelPhotos().enqueue(new Callback<List<ModelPhoto>>() {
-            @Override
-            public void onResponse(Call<List<ModelPhoto>>  call, Response<List<ModelPhoto>> response) {
-                List<Photo> result = new ArrayList<>();
-                assert response.body() != null;
-                for (ModelPhoto modelPhoto : response.body()) {
-                    result.add(new Photo(modelPhoto.getId(),
-                            modelPhoto.getUrls().getSmallUrl(),
-                            modelPhoto.getUrls().getFullUrl(),
-                            modelPhoto.getDescription()));
-                }
-                adapter.setPhotos(result);
-            }
+        compositeDisposable.add(
+                unsplashService
+                        .getModelPhotos(request)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                new Consumer<List<ModelPhoto>>() {
+                                    @Override
+                                    public void accept(List<ModelPhoto> modelPhotos) {
+                                        List<Photo> photos = new ArrayList<>();
+                                        for (ModelPhoto modelPhoto : modelPhotos) {
+                                            photos.add(new Photo(
+                                                    modelPhoto.getId(),
+                                                    modelPhoto.getUrls().getSmallUrl(),
+                                                    modelPhoto.getUrls().getFullUrl(),
+                                                    modelPhoto.getDescription()
+                                            ));
+                                        }
+                                        recyclerAdapter.setPhotos(photos);
+                                    }
 
-            @Override
-            public void onFailure(Call<List<ModelPhoto>> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable throwable) {
+                                        Log.d("DEBUG", throwable.getMessage());
+                                    }
+                                }
+                        )
+        );
     }
 
     public void startFavorite(View view) {

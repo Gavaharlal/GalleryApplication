@@ -2,10 +2,13 @@ package com.example.comp.imagelist.retrofit;
 
 import java.util.List;
 
-import retrofit2.Call;
+import io.reactivex.Observable;
 import retrofit2.http.GET;
+import retrofit2.http.Url;
 
 public interface UnsplashService {
-    @GET("photos?per_page=30&client_id=588504af4732dedfff1f7b64f0849b7bacb3d7ebf20e351f8bea66d084ef977b")
-    Call<List<ModelPhoto>> getModelPhotos();
+
+    @GET
+    Observable<List<ModelPhoto>> getModelPhotos(@Url String request);
+
 }

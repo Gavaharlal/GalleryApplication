@@ -11,6 +11,7 @@ public class Photo implements Parcelable {
     private String smallUrl;
     private String fullUrl;
     private String description;
+
     public Photo(String id, String smallUrl, String fullUrl, String description) {
         this.id = id;
         this.smallUrl = smallUrl;

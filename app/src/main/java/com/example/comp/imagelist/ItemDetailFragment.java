@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,9 +29,7 @@ public class ItemDetailFragment extends Fragment {
         assert getArguments() != null;
         String url = getArguments().getString(StringUtility.FULL_URL);
 
-        Picasso.get()
-                .load(url)
-                .into(imageView);
+        Picasso.get().load(url).into(imageView);
 
 
         return imageView;

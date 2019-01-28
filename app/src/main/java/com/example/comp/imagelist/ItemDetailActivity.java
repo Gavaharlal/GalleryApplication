@@ -1,9 +1,6 @@
 package com.example.comp.imagelist;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,6 +8,9 @@ import android.widget.Button;
 
 import com.example.comp.imagelist.adapter.Photo;
 import com.example.comp.imagelist.utils.StringUtility;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -20,6 +20,7 @@ import com.example.comp.imagelist.utils.StringUtility;
  */
 public class ItemDetailActivity extends AppCompatActivity {
 
+    private Disposable disposable;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -27,13 +28,22 @@ public class ItemDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.check);
 
-        Button addButton = findViewById(R.id.addButton);
+        final Button addButton = findViewById(R.id.addButton);
 
         Photo photo = getIntent().getParcelableExtra(StringUtility.PHOTO);
 
-        if (MyApplication.dataBaseHelper.containsPhoto(photo.getId())) {
-            addButton.setText(StringUtility.SAVED);
-        }
+        disposable = MyApplication
+                .dataBaseHelper
+                .containsPhoto(photo.getId())
+                .subscribe(new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean aBoolean) {
+                        if (aBoolean) {
+                            addButton.setText(StringUtility.SAVED);
+                        }
+                    }
+                });
+
 
         if (savedInstanceState == null) {
             // Create the detail fragment and add it to the activity
@@ -47,6 +57,14 @@ public class ItemDetailActivity extends AppCompatActivity {
                     .add(R.id.item_detail_container, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (disposable != null && !disposable.isDisposed()) {
+            disposable.dispose();
+        }
+        super.onDestroy();
     }
 
     @SuppressLint("SetTextI18n")

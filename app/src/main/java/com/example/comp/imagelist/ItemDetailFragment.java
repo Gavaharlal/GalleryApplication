@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.comp.imagelist.utils.StringUtility;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -19,28 +21,22 @@ import com.squareup.picasso.Picasso;
  */
 public class ItemDetailFragment extends Fragment {
 
-    private ImageView imageView;
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        imageView = (ImageView) inflater.inflate(R.layout.item_detail, container, false);
+        ImageView imageView = (ImageView) inflater.inflate(R.layout.item_detail, container, false);
 
-        String fullUrl = getArguments().getString("FULLURL");
-        Picasso.get().load(fullUrl).into(imageView);
+        assert getArguments() != null;
+        String url = getArguments().getString(StringUtility.FULL_URL);
+
+        Picasso.get()
+                .load(url)
+                .into(imageView);
+
 
         return imageView;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
 
 }

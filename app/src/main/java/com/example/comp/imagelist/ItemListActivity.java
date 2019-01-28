@@ -7,17 +7,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.example.comp.imagelist.adapter.Photo;
 import com.example.comp.imagelist.adapter.RecyclerAdapter;
 import com.example.comp.imagelist.favourites.FavoritesList;
-import com.example.comp.imagelist.retrofit.Photo;
-import com.example.comp.imagelist.retrofit.JsonParsable;
-import com.example.comp.imagelist.retrofit.MyRetrofitCreator;
+import com.example.comp.imagelist.retrofit.ModelPhoto;
+import com.example.comp.imagelist.retrofit.UnsplashClient;
+import com.example.comp.imagelist.retrofit.UnsplashService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.internal.EverythingIsNonNull;
 
 /**
  * An activity representing a list of Items. This activity
@@ -42,24 +45,26 @@ public class ItemListActivity extends AppCompatActivity {
         final RecyclerAdapter adapter = new RecyclerAdapter();
         recyclerView.setAdapter(adapter);
 
-        JsonParsable modelApi = MyRetrofitCreator.constructModelApi();
-
-        modelApi.parse().enqueue(new Callback<List<Photo>>() {
+        UnsplashService unsplashService = new UnsplashClient().createUnsplashService();
+        unsplashService.getModelPhotos().enqueue(new Callback<List<ModelPhoto>>() {
             @Override
-            public void onResponse(Call<List<Photo>> call, Response<List<Photo>> response) {
-                adapter.setPhotos(response.body());
+            public void onResponse(Call<List<ModelPhoto>>  call, Response<List<ModelPhoto>> response) {
+                List<Photo> result = new ArrayList<>();
+                assert response.body() != null;
+                for (ModelPhoto modelPhoto : response.body()) {
+                    result.add(new Photo(modelPhoto.getId(),
+                            modelPhoto.getUrls().getSmallUrl(),
+                            modelPhoto.getUrls().getFullUrl(),
+                            modelPhoto.getDescription()));
+                }
+                adapter.setPhotos(result);
             }
 
             @Override
-            public void onFailure(Call<List<Photo>> call, Throwable t) {
+            public void onFailure(Call<List<ModelPhoto>> call, Throwable t) {
                 t.printStackTrace();
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     public void startFavorite(View view) {

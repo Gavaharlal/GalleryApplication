@@ -12,11 +12,12 @@ import android.widget.TextView;
 
 import com.example.comp.imagelist.ItemDetailActivity;
 import com.example.comp.imagelist.R;
-import com.example.comp.imagelist.retrofit.Photo;
+import com.example.comp.imagelist.utils.StringUtility;
 import com.squareup.picasso.Picasso;
 
 
 class RecyclerViewHolder extends RecyclerView.ViewHolder {
+
     private TextView description;
     private ImageView image;
 
@@ -28,18 +29,15 @@ class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     @SuppressLint("SetTextI18n")
     void bind(final Photo photo) {
-        if (photo.getDescription() != null) {
-            description.setText(photo.getDescription());
-        } else {
-            description.setText("Without description");
-        }
-        Picasso.get().load(photo.getUrls().getSmallUrl()).into(image);
+
+        description.setText(photo.getDescription());
+        Picasso.get().load(photo.getSmallUrl()).into(image);
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Context context = v.getContext();
                 Intent intent = new Intent(context, ItemDetailActivity.class);
-                intent.putExtra("FULLURL", photo.getUrls().getSmallUrl());
+                intent.putExtra(StringUtility.PHOTO, photo);
                 context.startActivity(intent);
             }
         });

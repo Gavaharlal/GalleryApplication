@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.comp.imagelist.R;
-import com.example.comp.imagelist.retrofit.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
     public void onBindViewHolder(@NonNull RecyclerViewHolder recyclerViewHolder, int position) {
         recyclerViewHolder.bind(photos.get(position));
     }
-
 
     @Override
     public int getItemCount() {

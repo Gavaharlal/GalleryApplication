@@ -8,15 +8,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties
 public class Urls {
 
-    @JsonCreator
-    public Urls(@JsonProperty("small") String smallUrl) {
-        this.smallUrl = smallUrl;
-    }
+    @JsonProperty("small")
+    private String smallUrl;
+
+    @JsonProperty("full")
+    private String fullUrl;
 
     public String getSmallUrl() {
         return smallUrl;
     }
 
-    @JsonProperty("small")
-    private String smallUrl;
+    public String getFullUrl() {
+        return fullUrl;
+    }
 }

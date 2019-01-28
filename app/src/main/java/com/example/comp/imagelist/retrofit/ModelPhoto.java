@@ -1,18 +1,10 @@
 package com.example.comp.imagelist.retrofit;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties
-public class Photo {
-
-    @JsonCreator
-    public Photo(@JsonProperty("description") String description,
-                 @JsonProperty("urls") Urls urls) {
-        this.description = description;
-        this.urls = urls;
-    }
+public class ModelPhoto {
 
     @JsonProperty("id")
     private String id;
@@ -22,6 +14,10 @@ public class Photo {
 
     @JsonProperty("urls")
     private Urls urls;
+
+    public String getId() {
+        return id;
+    }
 
     public String getDescription() {
         return description;

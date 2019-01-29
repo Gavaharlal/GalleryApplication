@@ -1,17 +1,23 @@
 package com.example.comp.imagelist;
 
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import com.example.comp.imagelist.retrofit.ModelPhoto;
 import com.example.comp.imagelist.retrofit.UnsplashClient;
 import com.example.comp.imagelist.retrofit.UnsplashService;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,50 +34,75 @@ public class RetrofitTest {
     private static final String FULL_URL = "https://images.unsplash.com/photo-1543363950-c78545037afc?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjQ0Nzk0fQ";
     private static final String DESCRIPTION = "clear glass perfume bottle with box";
 
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     @Test
     public void testGettingModelFromRetrofit() {
-//        UnsplashService unsplashService = new UnsplashClient().createUnsplashService();
-//        unsplashService.getModelPhotos(REQUEST).enqueue(new Callback<List<ModelPhoto>>() {
-//            @Override
-//            public void onResponse(Call<List<ModelPhoto>> call, Response<List<ModelPhoto>> response) {
-//                assertNotNull(response);
-//                assertNotNull(response.body());
-//                Assert.assertEquals(30, response.body().size());
-//                boolean eachNotNull = true;
-//                for (ModelPhoto modelPhoto : response.body()) {
-//                    eachNotNull &= modelPhoto != null;
-//                }
-//                Assert.assertTrue(eachNotNull);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<ModelPhoto>> call, Throwable t) {
-//                t.printStackTrace();
-//            }
-//        });
+        UnsplashService unsplashService = new UnsplashClient().createUnsplashService();
 
+        compositeDisposable.add(
+                unsplashService
+                        .getModelPhotos(REQUEST)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                new Consumer<List<ModelPhoto>>() {
+                                    @Override
+                                    public void accept(List<ModelPhoto> modelPhotos) {
+                                        assertNotNull(modelPhotos);
+                                        Assert.assertEquals(30, modelPhotos.size());
+                                        boolean eachNotNull = true;
+                                        for (ModelPhoto modelPhoto : modelPhotos) {
+                                            eachNotNull &= modelPhoto != null;
+                                        }
+                                        Assert.assertTrue(eachNotNull);
+                                    }
+
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable throwable) {
+                                        Log.d("DEBUG", throwable.getMessage());
+                                    }
+                                }
+                        )
+        );
     }
 
     @Test
     public void testRequestOnePhoto() {
-//        UnsplashService unsplashService = new UnsplashClient().createUnsplashService();
-//        unsplashService.getModelPhotos(REQUEST_ONE_PHOTO).enqueue(new Callback<List<ModelPhoto>>() {
-//            @Override
-//            public void onResponse(Call<List<ModelPhoto>> call, Response<List<ModelPhoto>> response) {
-//                assertNotNull(response);
-//                assertNotNull(response.body());
-//                Assert.assertEquals(1, response.body().size());
-//                ModelPhoto modelPhoto = response.body().get(0);
-//                Assert.assertNotNull(modelPhoto);
-//                Assert.assertEquals(modelPhoto.getUrls().getSmallUrl(), SMALL_URL);
-//                Assert.assertEquals(modelPhoto.getUrls().getFullUrl(), FULL_URL);
-//                Assert.assertEquals(modelPhoto.getDescription(), DESCRIPTION);
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<ModelPhoto>> call, Throwable t) {
-//                t.printStackTrace();
-//            }
-//        });
+
+        UnsplashService unsplashService = new UnsplashClient().createUnsplashService();
+
+        compositeDisposable.add(
+                unsplashService
+                        .getModelPhotos(REQUEST_ONE_PHOTO)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                                new Consumer<List<ModelPhoto>>() {
+                                    @Override
+                                    public void accept(List<ModelPhoto> modelPhotos) {
+                                        assertNotNull(modelPhotos);
+                                        Assert.assertEquals(1, modelPhotos.size());
+                                        ModelPhoto modelPhoto = modelPhotos.get(0);
+                                        Assert.assertNotNull(modelPhoto);
+                                        Assert.assertEquals(modelPhoto.getUrls().getSmallUrl(), SMALL_URL);
+                                        Assert.assertEquals(modelPhoto.getUrls().getFullUrl(), FULL_URL);
+                                        Assert.assertEquals(modelPhoto.getDescription(), DESCRIPTION);
+                                    }
+
+                                }, new Consumer<Throwable>() {
+                                    @Override
+                                    public void accept(Throwable throwable) {
+                                        Log.d("DEBUG", throwable.getMessage());
+                                    }
+                                }
+                        )
+        );
+    }
+
+    @After
+    public void tearDown() {
+        compositeDisposable.clear();
     }
 }

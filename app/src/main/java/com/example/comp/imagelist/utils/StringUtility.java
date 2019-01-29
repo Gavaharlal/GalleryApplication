@@ -12,5 +12,6 @@ public class StringUtility {
     public static final String FULL_JSON = "full";
 
     public static final String SAVED = "Saved";
+    public static final String SAVE = "Save";
     public static final String PHOTO = "PHOTO";
 }

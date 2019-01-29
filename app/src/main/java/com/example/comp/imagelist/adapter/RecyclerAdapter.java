@@ -13,6 +13,7 @@ import java.util.List;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerViewHolder> {
 
+
     private List<Photo> photos = new ArrayList<>();
 
     public void setPhotos(List<Photo> arg) {
